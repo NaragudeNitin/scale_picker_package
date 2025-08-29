@@ -39,7 +39,7 @@ class UnitConverter {
   
   // Parse feet and inches string like "5' 8\""
   static Map<String, int>? parseFeetInches(String value) {
-    final regex = RegExp(r"(\d+)'\s*(\d+)\"?");
+    final regex = RegExp(r"(\d+)'\s*(\d+)");
     final match = regex.firstMatch(value);
     
     if (match != null) {

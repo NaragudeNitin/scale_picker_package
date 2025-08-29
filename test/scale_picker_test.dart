@@ -201,17 +201,33 @@ void main() {
     });
 
     test('parses feet inches string correctly', () {
-      const input = "5' 8\"";
-      final result = UnitConverter.parseFeetInches(input);
-      expect(result, isNotNull);
-      expect(result!['feet'], equals(5));
-      expect(result['inches'], equals(8));
+      // Test with apostrophe format
+      const input1 = "5' 8";
+      final result1 = UnitConverter.parseFeetInches(input1);
+      expect(result1, isNotNull);
+      expect(result1!['feet'], equals(5));
+      expect(result1['inches'], equals(8));
+
+      // Test with ft/in format
+      const input2 = "5 ft 8 in";
+      final result2 = UnitConverter.parseFeetInches(input2);
+      expect(result2, isNotNull);
+      expect(result2!['feet'], equals(5));
+      expect(result2['inches'], equals(8));
     });
 
     test('returns null for invalid feet inches string', () {
-      const input = "invalid";
-      final result = UnitConverter.parseFeetInches(input);
-      expect(result, isNull);
+      const input1 = "invalid";
+      final result1 = UnitConverter.parseFeetInches(input1);
+      expect(result1, isNull);
+
+      const input2 = "just numbers 123";
+      final result2 = UnitConverter.parseFeetInches(input2);
+      expect(result2, isNull);
+
+      const input3 = "";
+      final result3 = UnitConverter.parseFeetInches(input3);
+      expect(result3, isNull);
     });
   });
 
