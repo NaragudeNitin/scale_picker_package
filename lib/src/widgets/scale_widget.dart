@@ -211,52 +211,56 @@ class _ScaleWidgetState extends State<ScaleWidget> {
 
   Widget _buildVerticalListView() {
     final screenHeight = MediaQuery.of(context).size.height;
-    final listViewHeight = widget.config.height ?? screenHeight * 0.4;
+    final containerHeight = widget.config.height ?? screenHeight * 0.4;
+    final listViewHeight = containerHeight - (widget.config.padding.vertical);
     
-    return ListView.separated(
-      controller: _scrollController,
-      scrollDirection: Axis.vertical,
-      itemCount: _getItemCount(),
-      padding: EdgeInsets.only(
-        top: listViewHeight / 2.5,
-        bottom: listViewHeight / 2.5,
-      ),
-      separatorBuilder: (context, index) => SizedBox(height: _itemSpacing - 2),
-      itemBuilder: (context, index) {
-        final isMajor = _isMajorTick(index);
-        final label = _getLabel(index);
-        
-        return SizedBox(
-          height: 2,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.centerLeft,
-            children: [
-              if (label.isNotEmpty)
-                Positioned(
-                  left: -60,
-                  child: SizedBox(
-                    width: 50,
-                    child: Text(
-                      label,
-                      style: isMajor 
-                          ? widget.config.majorTextStyle ?? 
-                            const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)
-                          : widget.config.minorTextStyle ?? 
-                            const TextStyle(fontSize: 10),
-                      textAlign: TextAlign.right,
+    return SizedBox(
+      height: listViewHeight,
+      child: ListView.separated(
+        controller: _scrollController,
+        scrollDirection: Axis.vertical,
+        itemCount: _getItemCount(),
+        padding: EdgeInsets.only(
+          top: listViewHeight / 2.5,
+          bottom: listViewHeight / 2.5,
+        ),
+        separatorBuilder: (context, index) => SizedBox(height: _itemSpacing - 2),
+        itemBuilder: (context, index) {
+          final isMajor = _isMajorTick(index);
+          final label = _getLabel(index);
+          
+          return SizedBox(
+            height: 2,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.centerLeft,
+              children: [
+                if (label.isNotEmpty)
+                  Positioned(
+                    left: -60,
+                    child: SizedBox(
+                      width: 50,
+                      child: Text(
+                        label,
+                        style: isMajor 
+                            ? widget.config.majorTextStyle ?? 
+                              const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)
+                            : widget.config.minorTextStyle ?? 
+                              const TextStyle(fontSize: 10),
+                        textAlign: TextAlign.right,
+                      ),
                     ),
                   ),
+                Container(
+                  height: widget.config.majorLineWidth,
+                  width: isMajor ? widget.config.majorLineLength : widget.config.minorLineLength,
+                  color: isMajor ? widget.config.majorLineColor : widget.config.minorLineColor,
                 ),
-              Container(
-                height: widget.config.majorLineWidth,
-                width: isMajor ? widget.config.majorLineLength : widget.config.minorLineLength,
-                color: isMajor ? widget.config.majorLineColor : widget.config.minorLineColor,
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -309,13 +313,24 @@ class _ScaleWidgetState extends State<ScaleWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Determine container dimensions based on orientation
+    final containerHeight = widget.config.isVertical 
+        ? (widget.config.height ?? screenHeight * 0.4)
+        : null;
+    final containerWidth = widget.config.isVertical 
+        ? null 
+        : (widget.config.width ?? screenWidth - 32);
+
     final child = Container(
       decoration: BoxDecoration(
         color: widget.config.backgroundColor,
         borderRadius: widget.config.borderRadius,
       ),
-      height: widget.config.isVertical ? widget.config.height : null,
-      width: widget.config.isVertical ? null : widget.config.width,
+      height: containerHeight,
+      width: containerWidth,
       padding: widget.config.padding,
       child: Stack(
         children: [
